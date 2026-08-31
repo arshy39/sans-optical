@@ -14,14 +14,17 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); width: 100%; max-width: 400px;
       border-top: 4px solid #ff3b3b;
     }
-    h2 { text-align: center; margin-bottom: 25px; color: #ff3b3b; }
+    .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #333; }
+    .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #888; font-weight: bold; }
+    .tab.active { color: #ff3b3b; border-bottom: 2px solid #ff3b3b; }
+    .section { display: none; }
+    .section.active { display: block; }
     .form-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 5px; font-size: 14px; color: #bbb; }
     select, input {
       width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #333;
       background: #2b2b2b; color: #fff; font-size: 16px; box-sizing: border-box;
     }
-    select:focus, input:focus { outline: none; border-color: #ff3b3b; }
     .row { display: flex; gap: 10px; }
     .row .form-group { flex: 1; }
     button {
@@ -29,134 +32,162 @@
       border: none; border-radius: 6px; font-size: 16px; font-weight: bold;
       cursor: pointer; margin-top: 10px; transition: 0.3s;
     }
-    button:hover { background: #d63232; }
-    #message { text-align: center; margin-top: 15px; font-size: 14px; }
-    .success { color: #4caf50; }
-    .error { color: #f44336; }
+    #message, #reportMessage { text-align: center; margin-top: 15px; font-size: 14px; }
+    .success { color: #4caf50; } .error { color: #f44336; }
+    
+    /* استایل‌های کارت گزارش */
+    .report-card { background: #2b2b2b; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-right: 4px solid #ff3b3b; }
+    .report-card.summary { border-right-color: #4caf50; background: #1a2a1a; }
+    .report-title { font-weight: bold; color: #fff; margin-bottom: 8px; font-size: 15px; }
+    .report-detail { font-size: 13px; color: #bbb; margin-bottom: 4px; }
+    .highlight { color: #ffeb3b; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>مدیریت رزرو اپتیکال</h2>
-    <form id="reservationForm">
-      
-      <div class="row">
-        <div class="form-group">
-          <label>ماه</label>
-          <select name="month" required>
-            <option value="فروردین">فروردین</option>
-            <option value="اردیبهشت">اردیبهشت</option>
-            <option value="خرداد">خرداد</option>
-            <option value="تیر">تیر</option>
-            <option value="مرداد">مرداد</option>
-            <option value="شهریور">شهریور</option>
-            <option value="مهر">مهر</option>
-            <option value="آبان">آبان</option>
-            <option value="آذر">آذر</option>
-            <option value="دی">دی</option>
-            <option value="بهمن">بهمن</option>
-            <option value="اسفند">اسفند</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>روز (۱ تا ۳۱)</label>
-          <input type="number" name="day" min="1" max="31" required>
-        </div>
-      </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('add')">ثبت رزرو</div>
+      <div class="tab" onclick="switchTab('report')">گزارش‌گیری</div>
+    </div>
 
-      <div class="row">
-        <div class="form-group">
-          <label>سانس</label>
-          <select name="session" required>
-            <option value="10:00">10:00</option>
-            <option value="12:00">12:00</option>
-            <option value="14:00">14:00</option>
-            <option value="16:15">16:15</option>
-            <option value="18:30">18:30</option>
-            <option value="20:45">20:45</option>
-            <option value="23:00">23:00</option>
-            <option value="01:15">01:15</option>
-          </select>
+    <!-- بخش ثبت اطلاعات -->
+    <div id="addSection" class="section active">
+      <form id="reservationForm">
+        <div class="row">
+          <div class="form-group">
+            <label>ماه</label>
+            <select name="month" required>
+              <option value="شهریور">شهریور</option><option value="مهر">مهر</option>
+              <option value="آبان">آبان</option><option value="آذر">آذر</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>روز (۱ تا ۳۱)</label>
+            <input type="number" name="day" min="1" max="31" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>سانس</label>
+            <select name="session" required>
+              <option value="10:00">10:00</option><option value="12:00">12:00</option>
+              <option value="14:00">14:00</option><option value="16:15">16:15</option>
+              <option value="18:30">18:30</option><option value="20:45">20:45</option>
+              <option value="23:00">23:00</option><option value="01:15">01:15</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>پلتفرم</label>
+            <select name="platform" required>
+              <option value="we">WE (بدون کمیسیون)</option>
+              <option value="t4f">T4F (۱۴٪)</option><option value="zoom">Zoom (۱۱٪)</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label>رزرو شده</label><input type="number" name="reserved" value="0" min="0" required>
+          </div>
+          <div class="form-group">
+            <label>حاضر شده</label><input type="number" name="attended" value="0" min="0" required>
+          </div>
         </div>
         <div class="form-group">
-          <label>پلتفرم</label>
-          <select name="platform" required>
-            <option value="we">WE (بدون کمیسیون)</option>
-            <option value="t4f">T4F (۱۴٪)</option>
-            <option value="zoom">Zoom (۱۱٪)</option>
-          </select>
+          <label>بیعانه (تومان)</label><input type="number" name="deposit" value="0" required>
         </div>
-      </div>
+        <div class="form-group">
+          <label>تیم / توضیحات</label><input type="text" name="team">
+        </div>
+        <button type="submit" id="submitBtn">ثبت در گوگل شیت</button>
+        <div id="message"></div>
+      </form>
+    </div>
 
-      <div class="row">
-        <div class="form-group">
-          <label>رزرو شده (نفر)</label>
-          <input type="number" name="reserved" value="0" min="0" required>
-        </div>
-        <div class="form-group">
-          <label>حاضر شده (نفر)</label>
-          <input type="number" name="attended" value="0" min="0" required>
-        </div>
-      </div>
-
+    <!-- بخش گزارش گیری -->
+    <div id="reportSection" class="section">
       <div class="form-group">
-        <label>بیعانه دریافتی (تومان)</label>
-        <input type="number" name="deposit" value="0" required>
+        <label>انتخاب ماه برای گزارش:</label>
+        <select id="reportMonthSelect">
+          <option value="شهریور">شهریور</option><option value="مهر">مهر</option>
+          <option value="آبان">آبان</option><option value="آذر">آذر</option>
+        </select>
       </div>
-
-      <div class="form-group">
-        <label>نام تیم و توضیحات</label>
-        <input type="text" name="team" placeholder="مثلاً: تیم شجاعان + بدون تاخیر">
-      </div>
-
-      <button type="submit" id="submitBtn">ثبت در گوگل شیت</button>
-      <div id="message"></div>
-    </form>
+      <button id="getReportBtn" onclick="fetchReport()">دریافت لیست رزروها</button>
+      <div id="reportMessage"></div>
+      <div id="reportList" style="margin-top: 20px;"></div>
+    </div>
   </div>
 
   <script>
-    // لینک گوگل اسکریپت شما:
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIp3FzWyGZH7Fos2c2P0b9UiAmIsGPlneZ8bekAilV5jhT8P3w4CrTqLgExuesT8KAJQ/exec';
 
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      if(tab === 'add') {
+        document.querySelectorAll('.tab')[0].classList.add('active');
+        document.getElementById('addSection').classList.add('active');
+      } else {
+        document.querySelectorAll('.tab')[1].classList.add('active');
+        document.getElementById('reportSection').classList.add('active');
+      }
+    }
+
+    // بخش ثبت اطلاعات (همان کد قبلی)
     document.getElementById('reservationForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      
       const btn = document.getElementById('submitBtn');
       const msg = document.getElementById('message');
-      
       btn.innerText = 'در حال ثبت...';
-      btn.style.background = '#555';
-      msg.innerText = '';
-
       const formData = new FormData(this);
-      const data = new URLSearchParams(formData);
-
-      fetch(GOOGLE_SCRIPT_URL, {
-        method: 'POST',
-        body: data
-      })
+      fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: new URLSearchParams(formData) })
       .then(response => response.text())
       .then(text => {
         btn.innerText = 'ثبت در گوگل شیت';
-        btn.style.background = '#ff3b3b';
-        
         if(text.includes('موفقیت')) {
-          msg.className = 'success';
-          msg.innerText = '✅ اطلاعات با موفقیت در شیت ذخیره شد!';
-          this.reset();
-        } else {
-          msg.className = 'error';
-          msg.innerText = '❌ ' + text;
-        }
-      })
-      .catch(error => {
-        btn.innerText = 'ثبت در گوگل شیت';
-        btn.style.background = '#ff3b3b';
-        msg.className = 'error';
-        msg.innerText = '❌ خطای شبکه! لطفا دوباره تلاش کنید.';
+          msg.className = 'success'; msg.innerText = '✅ ذخیره شد!'; this.reset();
+        } else { msg.className = 'error'; msg.innerText = '❌ ' + text; }
       });
     });
+
+    // بخش گرفتن گزارش
+    function fetchReport() {
+      const btn = document.getElementById('getReportBtn');
+      const msg = document.getElementById('reportMessage');
+      const list = document.getElementById('reportList');
+      const month = document.getElementById('reportMonthSelect').value;
+      
+      btn.innerText = 'در حال دریافت اطلاعات...';
+      msg.innerText = ''; list.innerHTML = '';
+
+      fetch(GOOGLE_SCRIPT_URL + '?month=' + month)
+      .then(res => res.json())
+      .then(result => {
+        btn.innerText = 'دریافت لیست رزروها';
+        if (result.error) { msg.className = 'error'; msg.innerText = result.error; return; }
+        if (result.data.length === 0) { msg.className = ''; msg.innerText = 'هیچ سانس پر شده‌ای یافت نشد.'; return; }
+        
+        result.data.forEach(item => {
+          let card = document.createElement('div');
+          if (item.type === 'summary') {
+            card.className = 'report-card summary';
+            card.innerHTML = `<div class="report-title">📊 ${item.date}</div>
+                              <div class="report-detail">درآمد خالص کل: <span class="highlight">${item.net} تومان</span></div>`;
+          } else {
+            card.className = 'report-card';
+            card.innerHTML = `<div class="report-title">🗓 ${item.date} - ساعت ${item.session}</div>
+                              <div class="report-detail">تیم: ${item.team || 'نامشخص'} | پلتفرم: ${item.platform}</div>
+                              <div class="report-detail">حاضرین: ${item.attended} نفر | درآمد خالص: <span class="highlight">${item.net}</span></div>`;
+          }
+          list.appendChild(card);
+        });
+      })
+      .catch(err => {
+        btn.innerText = 'دریافت لیست رزروها';
+        msg.className = 'error'; msg.innerText = 'خطا در برقراری ارتباط با شیت!';
+      });
+    }
   </script>
 </body>
 </html>
